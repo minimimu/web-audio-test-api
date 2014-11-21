@@ -305,7 +305,7 @@ AudioBufferSourceNode.prototype._process = function(currentTime, nextCurrentTime
     }
 
     if (this.$stateAtTime(currentTime) === "FINISHED" && this.onended) {
-      this.onended({});
+      this.onended({ target: this });
       this._firedOnEnded = true;
     }
   }
@@ -1446,7 +1446,7 @@ OscillatorNode.prototype.$stateAtTime = function(t) {
 
 OscillatorNode.prototype._process = function(currentTime) {
   if (!this._firedOnEnded && this.$stateAtTime(currentTime) === "FINISHED" && this.onended) {
-    this.onended({});
+    this.onended({ target: this });
     this._firedOnEnded = true;
   }
 };

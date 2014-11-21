@@ -96,6 +96,22 @@ describe("OscillatorNode", function() {
       node.context.$processTo("00:00.300");
       expect(passed, "00:00.300").to.equal(1);
     });
+    it("should be invoked with an object containing the calling node object as arguments", function() {
+      var passed = null;
+
+      node.onended = function() {
+        passed = arguments[0];
+      };
+
+      node.connect(node.context.destination);
+      node.start(0);
+      node.stop(0.15);
+
+      expect(passed, "00:00.000").to.be.null();
+
+      node.context.$processTo("00:00.200");
+      expect(passed, "00:00.200").to.have.property("target", node);
+    });
   });
 
   describe("#$state", function() {

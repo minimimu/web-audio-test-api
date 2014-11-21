@@ -55,7 +55,7 @@ AudioBufferSourceNode.prototype._process = function(currentTime, nextCurrentTime
     }
 
     if (this.$stateAtTime(currentTime) === "FINISHED" && this.onended) {
-      this.onended({});
+      this.onended({ target: this });
       this._firedOnEnded = true;
     }
   }
