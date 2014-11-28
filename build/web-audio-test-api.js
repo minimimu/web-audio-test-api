@@ -301,10 +301,10 @@ AudioBufferSourceNode.prototype.$stateAtTime = function(t) {
   return state ? state : "FINISHED";
 };
 
-AudioBufferSourceNode.prototype._process = function(currentTime, nextCurrentTime) {
+AudioBufferSourceNode.prototype._process = function(currentTime) {
   if (!this._firedOnEnded) {
-    if (!this.loop && this.buffer && nextCurrentTime <= currentTime + this.buffer.duration) {
-      this._stopTime = Math.min(currentTime + this.buffer.duration, this._stopTime);
+    if (!this.loop && this.buffer && this._stopTime === Infinity) {
+      this._stopTime = currentTime + this.buffer.duration;
     }
 
     if (this.$stateAtTime(currentTime) === "FINISHED" && this.onended) {
@@ -328,7 +328,7 @@ AudioBufferSourceNode.prototype.start = function(when, offset, duration) {
       }
     ));
   }
-  this._startTime = when;
+  this._startTime = when < this.context.currentTime ? this.context.currentTime : when;
 };
 
 AudioBufferSourceNode.prototype.stop = function(when) {
@@ -343,16 +343,18 @@ AudioBufferSourceNode.prototype.stop = function(when) {
       }
     ));
   }
-  if (this._stopTime !== Infinity) {
+  if (this.$state === "FINISHED") {
     throw new Error(_.format(
-      "#{caption} cannot stop more than once", {
+      "#{caption} cannot stop after finished", {
         caption: caption
       }
     ));
   }
+  if (this.buffer && this._startTime + this.buffer.duration < when) {
+    when = this._startTime + this.buffer.duration;
+  }
   this._stopTime = when;
 };
-
 module.exports = AudioBufferSourceNode;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -1484,9 +1486,9 @@ OscillatorNode.prototype.stop = function(when) {
       }
     ));
   }
-  if (this._stopTime !== Infinity) {
+  if (this.$state === "FINISHED") {
     throw new Error(_.format(
-      "#{caption} cannot stop more than once", {
+      "#{caption} cannot stop after finished", {
         caption: caption
       }
     ));

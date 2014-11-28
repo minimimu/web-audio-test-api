@@ -191,9 +191,9 @@ describe("OscillatorNode", function() {
         node.stop();
       }).to.throw(Error);
     });
-    it("throw error if called more than once", function() {
+    it("throw error if called after finished", function() {
       node.start();
-      node.stop();
+      node.stop(0);
       expect(function() {
         node.stop();
       }).to.throw(Error);

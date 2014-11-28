@@ -89,9 +89,9 @@ OscillatorNode.prototype.stop = function(when) {
       }
     ));
   }
-  if (this._stopTime !== Infinity) {
+  if (this.$state === "FINISHED") {
     throw new Error(_.format(
-      "#{caption} cannot stop more than once", {
+      "#{caption} cannot stop after finished", {
         caption: caption
       }
     ));

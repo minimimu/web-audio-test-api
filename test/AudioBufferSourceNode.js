@@ -205,6 +205,12 @@ describe("AudioBufferSourceNode", function() {
         node.start();
       }).to.not.throw();
     });
+    it("should work and play immediately if the passed argument is negative number", function() {
+      expect(function() {
+        node.start(-1);
+      }).to.not.throw();
+      expect(node.$state).to.equal("PLAYING");
+    });
     it("throw error", function() {
       expect(function() {
         node.start("INVALID");
@@ -235,6 +241,16 @@ describe("AudioBufferSourceNode", function() {
         node.stop();
       }).to.not.throw();
     });
+    it("should work exactly if passed argument is greater than the duration", function() {
+      node.buffer = node.context.createBuffer(
+        1, node.context.sampleRate, node.context.sampleRate
+      );
+      node.connect(node.context.destination);
+      node.start(0);
+      node.stop(2);
+      expect(node.$stateAtTime(0.5)).to.equal("PLAYING");
+      expect(node.$stateAtTime(1.0)).to.equal("FINISHED");
+    });
     it("throw error", function() {
       node.start();
       expect(function() {
@@ -246,9 +262,9 @@ describe("AudioBufferSourceNode", function() {
         node.stop();
       }).to.throw(Error);
     });
-    it("throw error if called more than once", function() {
+    it("throw error if called after finished", function() {
       node.start();
-      node.stop();
+      node.stop(0);
       expect(function() {
         node.stop();
       }).to.throw(Error);
