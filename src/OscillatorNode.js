@@ -42,14 +42,17 @@ function OscillatorNode(context) {
 _.inherits(OscillatorNode, global.OscillatorNode);
 
 OscillatorNode.prototype.$stateAtTime = function(t) {
+  var state = "";
   if (this._startTime === Infinity) {
-    return "UNSCHEDULED";
+    state = "UNSCHEDULED";
+  } else if (t < this._startTime && this._stopTime <= t) {
+    state = "FINISHED";
   } else if (t < this._startTime) {
-    return "SCHEDULED";
+    state = "SCHEDULED";
   } else if (t < this._stopTime) {
-    return "PLAYING";
+    state = "PLAYING";
   }
-  return "FINISHED";
+  return state ? state : "FINISHED";
 };
 
 OscillatorNode.prototype._process = function(currentTime) {

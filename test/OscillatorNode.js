@@ -130,6 +130,16 @@ describe("OscillatorNode", function() {
       node.context.$processTo("00:00.200");
       expect(node.$state).to.equal("FINISHED");
     });
+    it("return 'FINISHED' if a current time reach the specified stop time during SCHEDULED", function() {
+      expect(node.$state).to.equal("UNSCHEDULED");
+
+      node.start(1);
+      expect(node.$state).to.equal("SCHEDULED");
+
+      node.stop(0.5);
+      ctx.$process(0.5);
+      expect(node.$state).to.equal("FINISHED");
+    });
   });
 
   describe("#$stateAtTime(t)", function() {

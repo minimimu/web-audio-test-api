@@ -38,14 +38,17 @@ function AudioBufferSourceNode(context) {
 _.inherits(AudioBufferSourceNode, global.AudioBufferSourceNode);
 
 AudioBufferSourceNode.prototype.$stateAtTime = function(t) {
+  var state = "";
   if (this._startTime === Infinity) {
-    return "UNSCHEDULED";
+    state = "UNSCHEDULED";
+  } else if (t < this._startTime && this._stopTime <= t) {
+    state = "FINISHED";
   } else if (t < this._startTime) {
-    return "SCHEDULED";
+    state = "SCHEDULED";
   } else if (t < this._stopTime) {
-    return "PLAYING";
+    state = "PLAYING";
   }
-  return "FINISHED";
+  return state ? state : "FINISHED";
 };
 
 AudioBufferSourceNode.prototype._process = function(currentTime, nextCurrentTime) {
