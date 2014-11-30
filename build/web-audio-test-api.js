@@ -328,7 +328,24 @@ AudioBufferSourceNode.prototype.start = function(when, offset, duration) {
       }
     ));
   }
-  this._startTime = when < this.context.currentTime ? this.context.currentTime : when;
+
+  if (when == null || when < this.context.currentTime) {
+    when = this.context.currentTime;
+  }
+
+  if (!this.loop && this.buffer) {
+    if (offset == null) {
+      offset = 0;
+    }
+    /* istanbul ignore next */
+    if (duration == null || this.buffer.duration < duration) {
+      duration = this.buffer.duration;
+    }
+    offset = offset % this.buffer.duration;
+    this._stopTime = duration - offset;
+  }
+
+  this._startTime = when;
 };
 
 AudioBufferSourceNode.prototype.stop = function(when) {

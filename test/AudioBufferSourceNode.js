@@ -141,6 +141,60 @@ describe("AudioBufferSourceNode", function() {
       node.context.$processTo("00:00.300");
       expect(passed, "00:00.300").to.equal(1);
     });
+    it("never works during #loop is true", function() {
+      var passed = 0;
+
+      node.onended = function() {
+        passed += 1;
+      };
+
+      node.buffer = node.context.createBuffer(
+        1, node.context.sampleRate * 0.15, node.context.sampleRate
+      );
+
+      node.connect(node.context.destination);
+      node.loop = true;
+
+      node.start(0);
+
+      expect(passed, "00:00.000").to.equal(0);
+
+      node.context.$processTo("00:00.100");
+      expect(passed, "00:00.100").to.equal(0);
+
+      node.context.$processTo("00:00.200");
+      expect(passed, "00:00.200").to.equal(0);
+
+      node.loop = false;
+
+      node.context.$processTo("00:00.400");
+      expect(passed, "00:00.400").to.equal(1);
+    });
+    it("works and stop as expected when a #play() method is called with offset or duration arguments", function() {
+      var passed = 0;
+
+      node.onended = function() {
+        passed += 1;
+      };
+
+      node.buffer = node.context.createBuffer(
+        1, node.context.sampleRate * 0.15, node.context.sampleRate
+      );
+
+      node.connect(node.context.destination);
+      node.start(0, 0.1);
+
+      expect(passed, "00:00.000").to.equal(0);
+
+      node.context.$processTo("00:00.025");
+      expect(passed, "00:00.025").to.equal(0);
+
+      node.context.$processTo("00:00.100");
+      expect(passed, "00:00.100").to.equal(1);
+
+      node.context.$processTo("00:00.200");
+      expect(passed, "00:00.200").to.equal(1);
+    });
     it("should be invoked with an object containing the calling node object as arguments", function() {
       var passed = null;
 
