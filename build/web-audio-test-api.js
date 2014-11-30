@@ -342,7 +342,7 @@ AudioBufferSourceNode.prototype.start = function(when, offset, duration) {
       duration = this.buffer.duration;
     }
     offset = offset % this.buffer.duration;
-    this._stopTime = duration - offset;
+    this._stopTime = when + duration - offset;
   }
 
   this._startTime = when;

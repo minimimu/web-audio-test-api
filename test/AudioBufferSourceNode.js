@@ -182,18 +182,22 @@ describe("AudioBufferSourceNode", function() {
       );
 
       node.connect(node.context.destination);
-      node.start(0, 0.1);
+      node.start(1, 0.1);
 
       expect(passed, "00:00.000").to.equal(0);
+      expect(node.$state, "00:00.000").to.equal("SCHEDULED");
 
-      node.context.$processTo("00:00.025");
-      expect(passed, "00:00.025").to.equal(0);
+      node.context.$processTo("00:01.000");
+      expect(passed, "00:01.000").to.equal(0);
+      expect(node.$state, "00:01.000").to.equal("PLAYING");
 
-      node.context.$processTo("00:00.100");
-      expect(passed, "00:00.100").to.equal(1);
+      node.context.$processTo("00:01.060");
+      expect(passed, "00:01.060").to.equal(1);
+      expect(node.$state, "00:01.060").to.equal("FINISHED");
 
-      node.context.$processTo("00:00.200");
-      expect(passed, "00:00.200").to.equal(1);
+      node.context.$processTo("00:01.100");
+      expect(passed, "00:01.100").to.equal(1);
+      expect(node.$state, "00:01.100").to.equal("FINISHED");
     });
     it("should be invoked with an object containing the calling node object as arguments", function() {
       var passed = null;
